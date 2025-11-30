@@ -54,7 +54,7 @@ const DashboardLayout = () => {
 };
 ```
 
-### Hide Layout for specific route
+### Hide Layout for a specific route
 
 If you want to hide the layout for specific page we just have to set layout false like this
 
