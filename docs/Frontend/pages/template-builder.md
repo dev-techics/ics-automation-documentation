@@ -1,43 +1,141 @@
 ---
-title: "Template Builder"
-sidebar_position: 2
+sidebar_position: 9
 ---
 
 # Template Builder
 
-The **Template Builder** is a powerful, drag-and-drop email editor. It allows you (or your team) to create beautiful, professional, and fully responsive email templates without writing a single line of code.
+The Template Builder provides a drag-and-drop email editor powered by Unlayer (`react-email-editor`). Users can create, edit, and save professional email templates without writing HTML.
 
-With the Template Builder, you can quickly build:
+## Architecture
 
-- Welcome emails
-- Consultation confirmation emails
-- Visa application status updates
-- Newsletter campaigns
-- Service promotion emails
+```mermaid
+graph TB
+    subgraph "TemplateBuilderPage"
+        Header[Header]
+        TemplateEditor[TemplateEditor]
+        Header --> TemplateEditor
+    end
+    
+    subgraph "react-email-editor"
+        Unlayer[Unlayer Editor]
+    end
+    
+    TemplateEditor --> Unlayer
+    
+    subgraph "State"
+        Redux[templateBuilderSlice]
+    end
+    
+    Header --> Redux
+    TemplateEditor --> Redux
+```
 
-### Key Features
+## Components
 
-- **Drag & Drop Interface** – Simply drag content blocks (text, images, buttons, dividers, social icons, etc.) into your template.
-- **Pre-designed Blocks** – Choose from a growing library of ready-made blocks tailored for immigration services (e.g., “Book a Consultation” CTA, service comparison tables, testimonial sections).
-- **Fully Responsive** – Every template automatically looks perfect on desktop, tablet, and mobile devices.
-- **Brand Customization** – Easily apply your firm’s colors, fonts, logo, and footer details across all templates.
-- **Image Hosting** – Upload and manage images directly in the editor.
-- **HTML Block** – Advanced users can add custom HTML/CSS for complete design flexibility.
-- **Real-time Preview** – See exactly how your template will appear to recipients before saving.
-- **Save as Reusable Template** – Once you create a great design, save it as a template and reuse it across multiple campaigns or automations.
+### TemplateBuilderPage
 
-### How to Create a New Template
+**Location:** `src/pages/dashboard/template-builder/TemplateBuilderPage.tsx`
 
-1. Go to **Templates** in your ICS Legal Automate dashboard.
-2. Click **“Create”**.
-3. Give your template a name (e.g., “UK Spouse Visa – Consultation Confirmed”).
-4. Start dragging blocks from the right sidebar into the canvas.
-5. Customize text, colors, images, and buttons to match your brand and message.
-6. Use merge tags to personalize content.
-7. Click **Save Template** when finished.
+The page entry point that loads an existing template or initializes a new one:
 
-![Template Builder Interface](./img//template-builder.png)
+```tsx
+const TemplateBuilderPage = () => {
+  const dispatch = useAppDispatch();
+  const { id } = useParams<{ id: string }>();
 
-Your saved templates can then be selected when creating email steps in the **Flow Builder**, sending one-off campaigns, or setting up automated workflows.
+  useEffect(() => {
+    dispatch(id ? loadTemplate(id) : resetTemplate());
+  }, [id, dispatch]);
 
-Start building professional, on-brand emails in minutes — no designer or developer required!
+  const emailEditorRef = useRef<EditorRef>(null);
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <TemplateEditor editorReference={emailEditorRef} />
+    </div>
+  );
+};
+```
+
+### TemplateContentEditor
+
+**Location:** `src/pages/dashboard/template-builder/TemplateContentEditor.tsx`
+
+An alternative view that uses `ContentEditor` instead of `TemplateEditor`, providing a different editing experience.
+
+### TemplateEditor
+
+Wraps the Unlayer editor with save/export functionality.
+
+### ContentEditor
+
+Provides an alternative editing interface for template content.
+
+### Header
+
+The toolbar component with actions for saving, exporting, and navigating.
+
+## State Management
+
+**Location:** `src/pages/dashboard/template-builder/redux/templateBuilderSlice.ts`
+
+Manages template loading, saving, and editor state.
+
+### Async Thunks
+
+| Thunk | Method | Endpoint | Description |
+|-------|--------|----------|-------------|
+| `loadTemplate` | GET | `/templates/:id` | Load an existing template |
+| `saveTemplate` | POST/PUT | `/templates` | Save or update a template |
+
+## Unlayer Integration
+
+The `react-email-editor` component provides:
+
+- **Drag-and-drop blocks** — Text, images, buttons, dividers, social icons, spacers
+- **Responsive design** — Templates automatically adapt to desktop, tablet, and mobile
+- **Design state** — Templates are stored as JSON, not raw HTML
+- **HTML export** — The editor can export the final HTML for email delivery
+
+### Editor Reference
+
+The editor is accessed through a ref:
+
+```tsx
+const emailEditorRef = useRef<EditorRef>(null);
+
+// Load design JSON
+emailEditorRef.current?.editor.loadDesign(design);
+
+// Export HTML
+emailEditorRef.current?.editor.exportHtml((data) => {
+  const { html } = data;
+  // Save html to backend
+});
+```
+
+## Template Data Model
+
+Templates stored in the backend include:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | number | Unique identifier |
+| `name` | string | Template name |
+| `html` | string | Rendered HTML output |
+| `design` | string \| null | Unlayer JSON design state |
+| `updated_at` | string | Last modified timestamp |
+
+## SMS Template Builder
+
+**Location:** `src/pages/dashboard/sms-template-builder/`
+
+A separate editor for SMS templates with its own Redux slice (`smsTemplateBuilderSlice`). SMS templates are simpler than email templates and do not use the Unlayer editor.
+
+### Routes
+
+| Route | Description |
+|-------|-------------|
+| `/dashboard/sms-template-builder` | Create new SMS template |
+| `/dashboard/sms-template-builder/:id` | Edit existing SMS template |
+| `/dashboard/sms-template-builder/flow/:id?` | Create SMS template from flow context |

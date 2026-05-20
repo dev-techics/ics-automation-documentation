@@ -1,54 +1,136 @@
 ---
-
 sidebar_position: 1
 ---
 
-#  ICS Automation
+# ICS Automation Documentation
 
-Intelligent Email & SMS Marketing Made Simple
-
-ICS Automation is a smart, modern marketing automation platform designed to help businesses communicate with their customers in the most efficient and impactful way. With a powerful blend of email marketing, SMS delivery, workflow automation, and real-time activity tracking, ICS Automation gives you everything you need to build campaigns that convert.
+ICS Automation is an intelligent email and SMS marketing automation platform designed for legal firms. It enables businesses to create visual automation workflows that engage contacts through personalized email and SMS messages, track engagement in real-time, and dynamically adjust communication paths based on user behavior.
 
 ---
 
-##  What ICS Automation Can Do
+## Platform Overview
 
-**Create fully-customized email templates**
+```mermaid
+graph LR
+    A[CRM System] -->|Trigger| B[ICS Automation]
+    B -->|Send Email| C[SendGrid]
+    B -->|Send SMS| D[Sendmode]
+    C -->|Events| B
+    D -->|Receipts| B
+    B -->|Analytics| E[Dashboard]
+```
 
-Build stunning email layouts using our drag-and-drop template editor powered by **Unlayer**. No coding required — design visually, edit instantly, and update with ease.
+### What ICS Automation Does
 
-**Build advanced marketing flows**
-
-Use a visual flow builder to create automated journeys with **emails, SMS, delays, and conditional logic**. Trigger sequences based on user activity — whether they clicked an email, visited your site, or performed any behavior you define.
-
-**Real-time tracking & analytics**
-
-Track opens, clicks, engagement, and conversions with precision. Every action is monitored so you can make data-driven decisions effortlessly.
-
-**Email + SMS sending support**
-
-Send personalized emails and SMS messages directly from ICS Automation. Perfect for reminders, follow-ups, promotions, onboarding sequences, and more.
-
-**Smart Conditional Split**
-
-Build intelligent flows that automatically take different paths based on customer behavior. Target the right users with the right messages at the right time.
-
----
-
-## Why ICS Automation Stands Out
-
-- Fully automated marketing workflows
-- Intuitive visual interface
-- Built-in template designer
-- Real-time performance dashboard
-- Easy setup & flexibility
-- A single platform for **Email + SMS + Workflow Automation**
+| Capability | Description |
+|-----------|-------------|
+| **Visual Flow Builder** | Drag-and-drop automation workflows with Trigger, Email, SMS, Delay, and Condition nodes |
+| **Email Marketing** | Send personalized emails via SendGrid with Unlayer visual template builder |
+| **SMS Messaging** | Send SMS messages via Sendmode with credit tracking and delivery receipts |
+| **Behavior Tracking** | Monitor email opens, clicks, bounces, and SMS delivery in real-time |
+| **Conditional Logic** | Route contacts down different paths based on their engagement |
+| **Contact Management** | Import contacts from CMS, organize into lists, and track automation history |
+| **CRM Integration** | External CRM systems trigger automation flows via API |
 
 ---
 
-## Perfect For
+## Technology Stack
 
-- Businesses wanting to automate their marketing
-- Agencies managing multiple client campaigns
-- Teams who need a reliable flow builder
-- Anyone looking to improve customer engagement and conversions
+### Frontend
+
+| Technology | Purpose |
+|-----------|---------|
+| React 19 + TypeScript | UI framework with type safety |
+| Vite 5 | Build tool and development server |
+| React Router 7 | Client-side routing |
+| Redux Toolkit 2 | Global state management |
+| @xyflow/react 12 | Visual flow builder (React Flow) |
+| react-email-editor (Unlayer) | Drag-and-drop email template designer |
+| Tailwind CSS 4 + shadcn/ui | Styling and component library |
+
+### Backend
+
+| Technology | Purpose |
+|-----------|---------|
+| Laravel 12 | PHP framework and API server |
+| MySQL 8.0 | Relational database |
+| Laravel Queues | Asynchronous job processing |
+| SendGrid API v3 | Email delivery and event tracking |
+| Sendmode HTTP API | SMS delivery and receipt tracking |
+
+---
+
+## Documentation Structure
+
+This documentation is organized into four main sections:
+
+### How to Use
+
+Step-by-step guides for end users who want to create and run automations:
+
+- Creating templates
+- Building contact lists
+- Designing automation flows
+- Understanding node types
+- Running and monitoring automations
+
+### Frontend Guide
+
+Technical documentation for developers working on the React application:
+
+- Project architecture and structure
+- Component organization
+- Routing and layout system
+- State management with Redux Toolkit
+- API integration patterns
+- Individual page documentation (Flow Builder, Template Builder, etc.)
+
+### Backend Guide
+
+Technical documentation for developers working on the Laravel API:
+
+- System architecture and design
+- Installation and configuration
+- Complete database schema
+- API endpoint reference
+- Automation engine and job queue system
+- Flow execution algorithm
+- Security, deployment, and troubleshooting
+
+---
+
+## Quick Start
+
+### For End Users
+
+1. Read the [How to Use](./how_to_use) guide to learn the basics
+2. Start by creating email and SMS templates
+3. Build a contact list and import your contacts
+4. Create your first automation flow
+5. Trigger the flow from your CRM system
+
+### For Frontend Developers
+
+1. Follow the [Frontend Installation](./Frontend/installation) guide
+2. Read the [Frontend Overview](./Frontend/overview) for architecture
+3. Explore the [Project Structure](./Frontend/structure) documentation
+4. Dive into specific pages like the [Flow Builder](./Frontend/pages/flow-builder)
+
+### For Backend Developers
+
+1. Follow the [Backend Installation](./Backend/installation-&-setup) guide
+2. Read the [Backend Overview](./Backend/overview) for system understanding
+3. Study the [Architecture](./Backend/architecture) and [Database](./Backend/database) docs
+4. Understand the [Jobs & Queues](./Backend/jobs-queues) system that powers automation
+
+---
+
+## Repository
+
+The source code is available at:
+
+```
+https://github.com/dev-techics/ics-automation
+```
+
+The repository contains both the frontend (React) and backend (Laravel) in a single codebase.

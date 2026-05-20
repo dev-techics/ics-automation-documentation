@@ -1,8 +1,8 @@
 {
-  "label": "Major Pages",
-  "position": 5,
+  "label": "Pages & Modules",
+  "position": 14,
   "link": {
     "type": "generated-index",
-    "description": "5 minutes to learn the most important Docusaurus concepts."
+    "description": "Detailed documentation of each page and feature module in the ICS Automation frontend."
   }
 }

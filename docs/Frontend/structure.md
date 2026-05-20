@@ -1,110 +1,191 @@
 ---
-
 sidebar_position: 3
 ---
 
-# Folder Structure
+# Project Structure
 
-The ICS Automation frontend project is organized to promote scalability, maintainability, and modular development. Below is a breakdown of the folder structure and its purpose.
+The codebase follows a **feature-module architecture** where each business domain is self-contained. This section documents the directory layout and the responsibility of each directory.
 
----
-
-## Root Directory
+## Root Layout
 
 ```
 ics-automation/
-├─ .vscode/          # VS Code settings for the project
-├─ build/            # Production build output
-├─ public/           # Static files served as-is (like images, favicon)
-├─ src/              # Main source code
-├─ .env              # Environment variables
-├─ package.json      # Project dependencies & scripts
-├─ tsconfig.json     # TypeScript configuration
-└─ vite.config.ts    # Vite configuration
+├── public/                  # Static assets (favicon, images)
+├── src/                     # Application source code
+├── .env                     # Environment variables
+├── components.json          # shadcn/ui configuration
+├── eslint.config.js         # ESLint flat config
+├── index.html               # HTML entry point
+├── package.json             # Dependencies and scripts
+├── tsconfig.json            # TypeScript root config
+├── tsconfig.app.json        # TypeScript app config
+├── tsconfig.node.json       # TypeScript node config
+├── vercel.json              # Vercel deployment config
+└── vite.config.ts           # Vite build configuration
 ```
 
-## `src/` Directory
+## Source Directory (`src/`)
 
 ```
 src/
-├─ api/            # Axios instances and API helpers
-├─ app/            # Redux store and central API hooks
-├─ assets/         # Images, icons, and static assets
-├─ components/     # Reusable UI components
-├─ context/        # React context providers
-├─ data/           # Static data like conditions, constants
-├─ hooks/          # Custom React hooks
-├─ layout/         # Layout components (DashboardLayout, WebsiteLayout)
-├─ lib/            # Utility functions
-├─ pages/          # Application pages grouped by module
-├─ routes/         # Application routing setup
-├─ types/          # TypeScript type definitions
-├─ App.tsx         # Root React component
-├─ main.tsx        # Entry point for React app
-├─ index.css       # Global styles
-└─ env.d.ts        # TypeScript declarations for environment variables
+├── api/                     # HTTP client layer
+│   ├── axiosInstance.ts     # Configured Axios instance
+│   └── index.ts             # RTK Query base API
+├── app/                     # Application-level configuration
+│   ├── api.ts               # RTK Query API slice
+│   └── store.ts             # Redux store configuration
+├── assets/                  # Static assets (images, icons)
+├── components/              # Shared UI components
+│   ├── ui/                  # shadcn/ui primitives
+│   ├── dashboard/           # Dashboard-specific shared components
+│   ├── ComingSoon.tsx       # Placeholder component
+│   └── NotFound.tsx         # 404 component
+├── context/                 # React Context providers
+│   └── dashboard-context/   # Dashboard UI state context
+├── data/                    # Static data and constants
+│   └── condition.ts         # Flow condition definitions
+├── hooks/                   # Custom React hooks
+│   ├── redux-hook.ts        # Typed Redux hooks
+│   └── use-mobile.ts        # Responsive breakpoint hook
+├── layout/                  # Top-level layout components
+│   ├── DashboardLayout.tsx  # Authenticated dashboard layout
+│   └── WebsiteLayout.tsx    # Public website layout
+├── lib/                     # Utility functions
+│   └── utils.ts             # cn() class merging utility
+├── pages/                   # Route-level page components
+│   ├── dashboard/           # Authenticated pages
+│   └── website/             # Public pages
+├── routes/                  # Routing configuration
+│   ├── index.tsx            # Router initialization
+│   ├── dashboard.tsx        # Dashboard route definitions
+│   ├── website.tsx          # Website route definitions
+│   └── ProtectedRoute.tsx   # Authentication guard
+├── types/                   # Global TypeScript types
+│   └── type.ts              # Shared type definitions
+├── App.tsx                  # Root component
+├── main.tsx                 # Application entry point
+├── index.css                # Global styles
+└── env.d.ts                 # Vite env variable declarations
 ```
 
-## Key Folders Explained
+## Feature Module Structure
 
-### `api/`
+Each feature module under `src/pages/dashboard/` follows a consistent internal structure:
 
-Contains the `axiosInstance.ts` file used for API requests. Centralizes HTTP logic and interceptors.
+```
+<feature-name>/
+├── components/              # Module-specific components
+│   ├── common/              # Shared within module
+│   └── ...                  # Feature-specific subdirectories
+├── redux/                   # State management
+│   └── <feature>Slice.ts    # Redux Toolkit slice
+├── types.ts                 # Module-specific TypeScript types
+└── <Feature>Page.tsx        # Page component (route entry point)
+```
 
-### `app/`
+### Example: Flow Builder Module
 
-- `store.ts` – Configures Redux store.
-- `api.ts` – API-related hooks for RTK Query or global API logic.
+```
+create-flow/
+├── components/
+│   ├── common/              # Shared sidebar components
+│   ├── flow-area/           # React Flow canvas
+│   │   ├── components/      # Custom node components
+│   │   │   ├── ConditionNode.tsx
+│   │   │   ├── DelayNode.tsx
+│   │   │   ├── EmailNode.tsx
+│   │   │   ├── SmsNode.tsx
+│   │   │   └── TriggerNode.tsx
+│   │   └── FlowArea.tsx     # Canvas configuration
+│   ├── header/              # Editor toolbar
+│   ├── left-sidebar/        # Node palette
+│   └── right-sidebar/       # Node configuration panel
+│       ├── components/
+│       │   └── ui/          # Template dialogs, previews
+│       └── RightSidebar.tsx
+├── redux/
+│   └── createFlowSlice.ts   # Flow state management
+├── type.ts                  # Flow-specific types
+└── CreateFlowPage.tsx       # Page entry point
+```
 
-### `components/`
+## Component Library (`src/components/`)
 
-Holds reusable UI components:
+### UI Primitives (`src/components/ui/`)
 
-- `ui/` – Generic UI elements like buttons, modals, tables, alerts, etc.
-- `dashboard/` – Components specific to the dashboard like topbar, sidebar, custom selects, inputs.
-- Other subfolders for specific areas like `flow-builder`, `template-builder`, etc.
+shadcn/ui components built on Radix UI primitives:
 
-### `context/`
+| Component | Source | Purpose |
+|-----------|--------|---------|
+| `alert-dialog.tsx` | Radix AlertDialog | Confirmation dialogs |
+| `avatar.tsx` | Radix Avatar | User avatars |
+| `badge.tsx` | Custom | Status badges |
+| `button.tsx` | Radix + CVA | Button variants |
+| `card.tsx` | Custom | Card containers |
+| `checkbox.tsx` | Radix Checkbox | Form checkboxes |
+| `dialog.tsx` | Radix Dialog | Modal dialogs |
+| `dropdown-menu.tsx` | Radix DropdownMenu | Dropdown menus |
+| `input.tsx` | Custom | Text inputs |
+| `label.tsx` | Radix Label | Form labels |
+| `scroll-area.tsx` | Radix ScrollArea | Scrollable containers |
+| `select.tsx` | Radix Select | Dropdown selects |
+| `separator.tsx` | Radix Separator | Visual dividers |
+| `sheet.tsx` | Radix Dialog | Slide-out panels |
+| `sidebar.tsx` | Custom | Collapsible sidebar |
+| `skeleton.tsx` | Custom | Loading placeholders |
+| `table.tsx` | Custom | Data tables |
+| `textarea.tsx` | Custom | Multi-line inputs |
+| `tooltip.tsx` | Radix Tooltip | Hover tooltips |
 
-Contains React Context providers for managing state that doesn't belong to Redux, e.g., dashboard-specific context.
+### Dashboard Components (`src/components/dashboard/`)
 
-### `hooks/`
+Shared components used across dashboard pages:
 
-Custom hooks for reusable logic, e.g., `redux-hook.ts` for typed Redux hooks, `use-mobile.ts` for responsive handling.
+| Component | Purpose |
+|-----------|---------|
+| `DashboardSidebar.tsx` | Main navigation sidebar |
+| `Topbar.tsx` | Top bar wrapper |
+| `DashboardTopbar.tsx` | Dashboard-specific top bar |
+| `CustomSelect.tsx` | Reusable select component |
+| `InputWithLabel.tsx` | Labeled input wrapper |
 
-### `pages/`
+## State Management Structure
 
-Organized by module:
+### Redux Store (`src/app/store.ts`)
 
-- `dashboard/` – Main admin panel features (flows, templates, contacts, segments).
-- `website/` – Public-facing website pages.
+The store aggregates all feature slices:
 
-Each module contains:
+```
+store.ts
+├── flowList          # Flow list page state
+├── createFlow        # Flow builder state
+├── createTemplate    # Template builder state (legacy)
+├── segmentList       # Segment list state
+├── templateBuilder   # Template builder state
+├── templateList      # Template list state
+├── importContact     # Contact import state
+├── smsTemplateBuilder # SMS template state
+└── unsubscribe       # Unsubscribe page state
+```
 
-- `components/` – Module-specific components.
-- `redux/` – Redux slices for state management.
-- `types.ts` – TypeScript types for the module.
-- Main page component (e.g., `FlowListPage.tsx`).
+### React Context (`src/context/`)
 
-### `redux/` in each module
+| Context | Purpose |
+|---------|---------|
+| `DashboardContext` | Sidebar visibility, selected node, dialog states |
 
-Redux slices using **Redux Toolkit**. Handles state updates, async actions (with **Redux Thunk**), and API integration for that module.
+## API Layer (`src/api/`)
 
-### `layout/`
+| File | Purpose |
+|------|---------|
+| `axiosInstance.ts` | Configured Axios instance with base URL, credentials, timeout |
+| `index.ts` | RTK Query `createApi` base configuration |
 
-Defines high-level layout components:
+## Routing Structure (`src/routes/`)
 
-- `DashboardLayout.tsx` – Layout for admin pages.
-- `WebsiteLayout.tsx` – Layout for public-facing pages.
-
----
-
-## Summary
-
-This folder structure ensures:
-
-- **Modularity:** Each feature has its own folder with components, types, and state.
-- **Scalability:** Easy to add new pages, features, and modules.
-- **Maintainability:** Clear separation of concerns between UI, state, API, and utility code.
-- **Type safety:** All TypeScript types organized in `types/` and module-specific type files.
-- **Centralized API logic:** All API calls go through `api/` with Redux handling state
+| File | Purpose |
+|------|---------|
+| `index.tsx` | `createBrowserRouter` initialization, top-level route tree |
+| `dashboard.tsx` | All `/dashboard/*` route definitions |
+| `website.tsx` | All public route definitions |
+| `ProtectedRoute.tsx` | Authentication guard wrapper |
